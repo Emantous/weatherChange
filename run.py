@@ -15,4 +15,4 @@ while True:
         continue
     break
 
-get_codes()
+find_cities(number_of_cities)

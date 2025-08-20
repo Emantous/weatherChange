@@ -2,17 +2,19 @@ import requests, sqlite3
 from bs4 import BeautifulSoup
 import pandas as pd
 
-def find_cities():
+def find_cities(amount):
+    get_codes()
     url = "https://en.wikipedia.org/wiki/List_of_largest_cities"
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     table = soup.find_all('tbody')[1]
-    hook = PostgresHook(postgres_conn_id='postgres_localhost')
+    conn = sqlite3.connect("./data/cities")
+    cursor = conn.cursor()
 
-    hook.run('''
+    cursor.execute('''
         DROP TABLE IF EXISTS top_cities
     ''')
-    hook.run('''
+    cursor.execute('''
         CREATE TABLE top_cities (
             place INT,
             name TEXT,
@@ -20,7 +22,7 @@ def find_cities():
             PRIMARY KEY (name)
         )
     ''')
-    for place in range(2, 12):
+    for place in range(2, amount + 2):
         city = table.find_all('tr')[place].find('th').find('a').contents[0]
         country = table.find_all('tr')[place].find('td').contents[0]
         if city == 'Kinshasa':
@@ -46,13 +48,16 @@ def find_cities():
             country = 'Tanzania, the United Republic of'
         elif country == 'Sudan':
             country = 'Sudan (the)'
-        hook.run('''
+        cursor.execute('''
             INSERT INTO top_cities (
                 place,
                 name,
                 country
-            ) VALUES (%s, %s, %s)
-        ''', parameters=(place-1, city, country))
+            ) VALUES (?, ?, ?)
+        ''', (place-1, city, country))
+    conn.commit()
+    conn.close()
+    join_and_get()
 
 def get_codes():
     conn = sqlite3.connect("./data/cities")
@@ -82,18 +87,20 @@ def get_codes():
                 if code.contents[0] == 'TW':
                     country = 'Taiwan'
                 cursor.execute('INSERT INTO country_codes (country, code) VALUES (?, ?)', (country, code.contents[0]))
-        conn.commit()
-        conn.close()
-
-def join_and_get():
-    hook = PostgresHook(postgres_conn_id='postgres_localhost')
-    conn = hook.get_conn()
-    query = """
-            SELECT *
-            FROM top_cities
-            NATURAL JOIN country_codes
-            """
-    joined = pd.read_sql_query(query, conn)
     conn.commit()
     conn.close()
-    return joined
+
+def join_and_get():
+    conn = sqlite3.connect("./data/cities")
+    cursor = conn.cursor()
+    cursor.execute('''
+        DROP TABLE IF EXISTS city_data
+    ''')
+    cursor.execute("""
+    CREATE TABLE city_data AS
+    SELECT * 
+    FROM top_cities
+    NATURAL JOIN country_codes
+    """)
+    conn.commit()
+    conn.close()
