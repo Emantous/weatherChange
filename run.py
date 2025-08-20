@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 from scripts.ETL import weather_pipeline
 from scripts.web_scraping import get_codes, find_cities
@@ -14,5 +14,16 @@ while True:
         print("The input isn't a number")
         continue
     break
-
 find_cities(number_of_cities)
+
+'''while True:
+    date = input("Input one date of desired weather data starting from 1979-01-02 up to the 1,5 years from now (in format YYYY-MM-DD):\n")
+    try:
+        number_of_cities = int(number_of_cities)
+        if number_of_cities < 1 or number_of_cities > 81:
+            print("Wrong number of cities")
+            continue
+    except:
+        print("The input isn't a number")
+        continue
+    break'''

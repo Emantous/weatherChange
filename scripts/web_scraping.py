@@ -8,7 +8,7 @@ def find_cities(amount):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     table = soup.find_all('tbody')[1]
-    conn = sqlite3.connect("./data/cities")
+    conn = sqlite3.connect("./data/cities.db")
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -60,7 +60,7 @@ def find_cities(amount):
     join_and_get()
 
 def get_codes():
-    conn = sqlite3.connect("./data/cities")
+    conn = sqlite3.connect("./data/cities.db")
     cursor = conn.cursor()
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='country_codes';")
     table_exists = cursor.fetchone()
@@ -91,7 +91,7 @@ def get_codes():
     conn.close()
 
 def join_and_get():
-    conn = sqlite3.connect("./data/cities")
+    conn = sqlite3.connect("./data/cities.db")
     cursor = conn.cursor()
     cursor.execute('''
         DROP TABLE IF EXISTS city_data
