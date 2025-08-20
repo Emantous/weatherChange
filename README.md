@@ -1,14 +1,14 @@
 # 🌦 Weather Data Pipeline
 
 ## 📖 Overview
-An automated **ETL pipeline** that collects **current and historical weather data** for the **10 most populated cities in the world**, stores it in **PostgreSQL**, and updates daily.  
+An **ETL pipeline** that collects **current and historical weather data** for a user-defined set of cities and chosen date ranges, storing it in **SQLite**.  
 Built to practice **data engineering** skills with modern tools.
 
 ---
 
 ## 🛠 Tech Stack
 🐍 Python • 📦 pandas • 🌐 requests  
-🐘 PostgreSQL • 🗂 Docker • 📅 Apache Airflow  
+🗄 SQLite  
 ☁️ OpenWeather API • 🕵️ Web Scraping
 
 ---
@@ -21,25 +21,24 @@ Built to practice **data engineering** skills with modern tools.
 
 ## 🚀 Features
 
-Daily updates with Airflow scheduling
+- Choose how many cities to analyze  
+- Select past or present dates for weather data collection  
+- Historical + current weather records  
+- Automated ETL from extraction to storage  
+- Lightweight local storage with SQLite  
 
-Historical + current weather records
-
-Automated ETL from extraction to storage
-
-Containerized with Docker for easy setup
+---
 
 ## 📊 Example Uses
 
-Weather trend analysis
+- Weather trend analysis  
+- Historical comparisons  
+- Feeding machine learning models  
+- Dashboard creation in Power BI / Tableau  
 
-Historical comparisons
-
-Feeding machine learning models
-
-Dashboard creation in Power BI / Tableau
+---
 
 ## 📜 License
 
-Educational use only.
+Educational use only.  
 Weather data from OpenWeather.
