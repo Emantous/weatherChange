@@ -55,30 +55,35 @@ def find_cities():
         ''', parameters=(place-1, city, country))
 
 def get_codes():
-    url = "https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes"
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    table = soup.find_all('tbody')[0]
-    countries = table.find_all('tr')
+    conn = sqlite3.connect("./data/cities")
+    cursor = conn.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='country_codes';")
+    table_exists = cursor.fetchone()
 
-    hook = PostgresHook(postgres_conn_id='postgres_localhost')
-    hook.run('''
-        DROP TABLE IF EXISTS country_codes
-    ''')
-    hook.run('''
-        CREATE TABLE country_codes (
-            country TEXT,
-            code TEXT,
-            PRIMARY KEY (country)
-        )
-    ''')
-    for i in range(2, len(countries)):
-        code = countries[i].find('span',{ 'class' : 'monospaced'})
-        country = countries[i].find('a').contents[0]
-        if code is not None:
-            if code.contents[0] == 'TW':
-                country = 'Taiwan'
-            hook.run('INSERT INTO country_codes (country, code) VALUES (%s, %s)', parameters=(country, code.contents[0]))
+    if not table_exists:
+        # Create the table if it doesn't exist
+        url = "https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes"
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        table = soup.find_all('tbody')[0]
+        countries = table.find_all('tr')
+
+        cursor.execute('''
+            CREATE TABLE country_codes (
+                country TEXT,
+                code TEXT,
+                PRIMARY KEY (country)
+            )
+        ''')
+        for i in range(2, len(countries)):
+            code = countries[i].find('span',{ 'class' : 'monospaced'})
+            country = countries[i].find('a').contents[0]
+            if code is not None:
+                if code.contents[0] == 'TW':
+                    country = 'Taiwan'
+                cursor.execute('INSERT INTO country_codes (country, code) VALUES (?, ?)', (country, code.contents[0]))
+        conn.commit()
+        conn.close()
 
 def join_and_get():
     hook = PostgresHook(postgres_conn_id='postgres_localhost')

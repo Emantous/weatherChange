@@ -2,8 +2,6 @@ from dotenv import load_dotenv
 import os, sqlite3, requests
 from datetime import date
 from scripts.web_scraping import join_and_get
-from airflow.providers.postgres.hooks.postgres import PostgresHook
-
 
 def extract(city, weather_date, API_KEY):
     lat_lon = (requests.get(f"http://api.openweathermap.org/geo/1.0/direct?q={city[2]},{city[3]}&appid={API_KEY}")).json()[0]
