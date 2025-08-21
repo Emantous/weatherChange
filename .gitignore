@@ -1,2 +1,4 @@
 .env
 cities.db
+weatherData.db
+/scripts/__pycache__

@@ -57,7 +57,7 @@ def find_cities(amount):
         ''', (place-1, city, country))
     conn.commit()
     conn.close()
-    join_and_get()
+    join()
 
 def get_codes():
     conn = sqlite3.connect("./data/cities.db")
@@ -90,7 +90,7 @@ def get_codes():
     conn.commit()
     conn.close()
 
-def join_and_get():
+def join():
     conn = sqlite3.connect("./data/cities.db")
     cursor = conn.cursor()
     cursor.execute('''
