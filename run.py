@@ -38,5 +38,4 @@ while True:
         print("\nThe date is not in the given time range")
         continue
     required_dates.append(input_date)
-
 weather_pipeline(required_dates)
